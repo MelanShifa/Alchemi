@@ -1,42 +1,17 @@
-.pageContainer {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-  
-.header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 20px;
-}
-  
-.brandName {
-    font-size: 1.5rem; /* Adjust the size as needed */
-    font-weight: bold;
-    /* Add additional styling as required for your brand */
-    color: gold;
-}
-
 .container {
     width: 100%;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    z-index: 1;
 }
 
-.form{
+.form {
     background-color: var(--bgSoft);
     padding: 50px;
     border-radius: 10px;
     width: 500px;
-    height: 800px;
+    height: 1000px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -44,16 +19,26 @@
     gap: 30px;
 }
 
-.form input{
+.form input {
     width: 100%;
     padding: 30px;
     border: 2px solid #2e374a;
     border-radius: 5px;
     background-color: var(--bg);
-    color: var(--text)
+    color: var(--text);
+}
+.form textarea { /* Apply the styles to both input and textarea */
+    width: 100%;
+    padding: 30px;
+    border: 2px solid #2e374a;
+    border-radius: 5px;
+    background-color: var(--bg);
+    color: var(--text);
+    resize: vertical; /* Allow vertical resize for textarea */
 }
 
-.form button{
+
+.form button {
     width: 100%;
     padding: 30px;
     background-color: teal;

@@ -1,15 +1,20 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "@/app/components/Ui/login/signup/profile/profile.module.css";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dashboard from '@/app/components/dashboard/page';
 import { SiAlchemy } from "react-icons/si";
+import * as Realm from 'realm-web';
+
 
 const ProfileCreation = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    major: '',
-    school: ''
+    name: "",
+    major: "",
+    school: "",
+    email: "",
   });
 
   // State to hold the router object
@@ -17,24 +22,55 @@ const ProfileCreation = () => {
 
   // useEffect to ensure useRouter is called in the client-side environment
 
-
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prevState => ({
+
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    // Handle profile creation logic here, e.g., send data to your API
+    setIsLoading(true);
 
-    // Redirect to the dashboard after successful profile creation
-    // Check if router is available (which indicates we are client-side)
-    if (router) {
-      router.push('/components/dashboard'); // Make sure '/dashboard' is the correct path to your dashboard
+    event.preventDefault();
+    const userData = {
+      Name: formData.name,
+      Email: formData.email,
+      Major: formData.major,
+      School: formData.school,
+    };
+    console.log("Sending user data:", userData);
+
+    try {
+      const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
+      const user = app.currentUser;
+      const token = user ? user._accessToken : null;
+      const response = await fetch("/api/createUser", {
+        // Adjust the endpoint as needed
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`,
+
+        },
+        body: JSON.stringify(userData),
+      });
+     
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("User created successfully:", result);
+      // Handle successful response here (e.g., show a success message, clear form, etc.)
+      router.push("/components/dashboard"); // Make sure '/dashboard' is the correct path to your dashboard
+    } catch (error) {
+      console.error("Failed to create course:", error);
+      // Handle errors here (e.g., show error message)
     }
+    setIsLoading(false);
   };
 
   return (
@@ -54,6 +90,13 @@ const ProfileCreation = () => {
           />
           <input
             type="text"
+            name="email"
+            placeholder="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
             name="major"
             placeholder="Major"
             value={formData.major}
@@ -66,7 +109,11 @@ const ProfileCreation = () => {
             value={formData.school}
             onChange={handleChange}
           />
-          <button type="submit">Complete Profile</button>
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <button type="submit">Complete Profile</button>
+          )}
         </form>
       </div>
     </div>
