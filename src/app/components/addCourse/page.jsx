@@ -2,6 +2,10 @@
 import { useState } from 'react';
 import styles from './Upload.module.css';
 import {useRouter} from 'next/navigation';
+import CircularProgress from '@mui/material/CircularProgress';
+import * as Realm from 'realm-web';
+
+
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -10,14 +14,23 @@ export default function Upload() {
   const [content, setContent] = useState('');
   const [bookName, setBookName] = useState('');
   const [summary, setSummary] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleSyllabusSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('file', file);
-
+    const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
+    const user = app.currentUser;
+    const token = user ? user._accessToken : null;
     const response = await fetch('/api/uploadSyllabus', {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        // Include other headers as needed, like 'Content-Type' if your API expects it
+      },
       body: formData,
     });
 
@@ -29,6 +42,8 @@ export default function Upload() {
       setSummary(data.extractedData.Summary || '');
     }
     setFile(null);
+    setIsLoading(false);
+
   };
   const router = useRouter();
 
@@ -37,14 +52,21 @@ export default function Upload() {
     const courseData = { title, description, content, bookName, summary };
   
     try {
+      setIsLoading(true);
+      const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
+      const user = app.currentUser;
+      const token = user ? user._accessToken : null;
       const response = await fetch('/api/createCourse', { // Adjust the endpoint as needed
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+
         },
         body: JSON.stringify(courseData),
       });
-  
+   
+    
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -58,13 +80,19 @@ export default function Upload() {
       console.error('Failed to create course:', error);
       // Handle errors here (e.g., show error message)
     }
+    setIsLoading(false);
+
   };
   
   return (
     <div className={styles.container}>
             <form className={styles.form} onSubmit={handleSyllabusSubmit}>
         <input type="file" onChange={(e) => setFile(e.target.files[0])} required />
-        <button type="submit">Upload Syllabus</button>
+        {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <button type="submit">Upload Syllabus</button>
+            )}
       </form>
       
       <form className={styles.form} onSubmit={handleCourseSubmit}>

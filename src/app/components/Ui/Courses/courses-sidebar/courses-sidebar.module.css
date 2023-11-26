@@ -1,0 +1,97 @@
+.container {
+  position:relative; /* Change to fixed */
+  min-height: 95vh; /* Set minimum height to 100% of viewport height */
+  margin-top: 5%; /* Adjust as needed */
+  max-height: 100%;
+  overflow-y: auto; /* Add vertical scroll if content exceeds the viewport */
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Stack children vertically */
+}
+
+
+
+/* Optional: Style for the active link */
+.active {
+  font-weight: bold;
+  color: rgb(160, 160, 161);
+}
+.userTitle{
+  font-size: 12px;
+  color: var(--textSoft);
+}
+
+.userHeader {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 32px; /* Increased font size */
+  color:gold;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increased gap between items */
+  margin-bottom: 30px; /* Increased margin */
+  margin-top: 30px; /* Increased margin */
+}
+
+.userImage {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userDetail {
+  display: flex;
+  flex-direction: column;
+}
+.userTitle{
+  font-size: 12px;
+  color: var(--textSoft);
+}
+.username {
+  font-weight: 600; /* Increased font weight */
+}
+
+.userTitle {
+  font-size: 100px; /* Increased font size */
+  color: var(--textSoft);
+}
+
+.list {
+  list-style: none;
+}
+.bottomItems {
+  margin-top: auto; /* Pushes the bottomItems to the bottom */
+}
+
+.cat {
+  color: var(--textSoft);
+  font-weight: bold;
+  font-size: 16px; /* Increased font size */
+  margin: 120px 120px; /* Increased margin */
+}
+
+.logout {
+  padding: 25px; /* Increased padding */
+  margin: 10px 0px; /* Increased margin */
+  border-radius: 15px; /* Increased border radius */
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increased gap between items */
+  cursor: pointer;
+  border: none;
+  color: white;
+  width: 100%;
+  background-color: #2e374a;
+}
+
+.logout:hover {
+  background-color: red;
+}
+
+.logout > svg {
+  margin-left: 10px; /* Increased margin */
+}

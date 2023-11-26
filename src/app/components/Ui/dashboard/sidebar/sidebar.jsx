@@ -15,11 +15,22 @@ import {
   MdPeople,
   MdOutlineSettings,
   MdHelpCenter,
-  MdLogout,
-} from "react-icons/md";
+  MdLogout,MdOutlineSchool ,MdQuickreply,
+ 
+  
+} 
+
+from "react-icons/md";
+import { IoIosNotifications } from "react-icons/io";
+import { FaRegCalendarCheck,FaUserGraduate, } from "react-icons/fa";
+import { GrInProgress } from "react-icons/gr";
+import { SiAlchemy } from "react-icons/si";
+import * as Realm from 'realm-web';
+
 const menuItems = [
+
     {
-      title: "Pages",
+      title: "Home Page",
       list: [
         {
           title: "Dashboard",
@@ -27,44 +38,44 @@ const menuItems = [
           icon: <MdDashboard />,
         },
         {
-          title: "Users",
+          title: "User",
           path: "/dashboard/users",
-          icon: <MdSupervisedUserCircle />,
+          icon: <FaUserGraduate />,
         },
         {
-          title: "Products",
+          title: "Courses",
           path: "/dashboard/products",
-          icon: <MdShoppingBag />,
+          icon: <MdOutlineSchool />,
         },
         {
-          title: "Transactions",
+          title: "Notifications",
           path: "/dashboard/transactions",
-          icon: <MdAttachMoney />,
+          icon: <IoIosNotifications />,
         },
       ],
     },
     {
-      title: "Analytics",
+      title: "Progress",
       list: [
         {
-          title: "Revenue",
+          title: "Progress Tracker",
           path: "/dashboard/revenue",
-          icon: <MdWork />,
+          icon: <GrInProgress />,
         },
         {
-          title: "Reports",
+          title: "Announcments",
           path: "/dashboard/reports",
-          icon: <MdAnalytics />,
+          icon: <MdQuickreply />,
         },
         {
-          title: "Teams",
+          title: "Calendar",
           path: "/dashboard/teams",
-          icon: <MdPeople />,
+          icon:<FaRegCalendarCheck />,
         },
       ],
     },
     {
-      title: "User",
+      title: "About",
       list: [
         {
           title: "Settings",
@@ -88,7 +99,16 @@ const Sidebar = ()=>{
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/getUser');
+        const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
+        const user = app.currentUser; // Ensure 'app' and 'currentUser' are properly defined and available
+        const token = user ? user._accessToken : null; // Use the correct token property
+  
+        const response = await fetch('/api/getUser', {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Add token to the getUser request
+            // Include other headers as needed
+          },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch user');
         }
@@ -102,8 +122,22 @@ const Sidebar = ()=>{
     fetchUserData();
   }, []);
 
+  const handleLogout = () => {
+    // Redirect the user to the homepage
+    router.push('/');
+  
+    // Add a delay (e.g., 2 seconds) before setting user to null
+    const delay = 7000; // 2 seconds
+  
+    setTimeout(() => {
+      setUser(null);
+    }, delay);
+  };
+  
+
     return (
         <div className = {styles.container}>
+          <span className={styles.userHeader}> <SiAlchemy />               Alchemi</span>
             <div className = {styles.user}>
                 <Image className = {styles.userImage} src="/noavatar.png" alt="" width="50" height="50"/>
                 <div className = {styles.userDetail}>
@@ -121,8 +155,11 @@ const Sidebar = ()=>{
                     </li>
                 ))}
             </ul>
-            <button className={styles.logout}>Logout</button>
-            <MdLogout />
+            <button className={styles.logout} onClick={handleLogout}>
+            <MdLogout /> Logout
+
+</button>
+
         </div>
     )
 }
