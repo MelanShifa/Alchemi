@@ -4,12 +4,6 @@ import Image from "next/image";
 
 import {
     MdDashboard,
-  MdSupervisedUserCircle,
-  MdShoppingBag,
-  MdAttachMoney,
-  MdWork,
-  MdAnalytics,
-  MdPeople,
   MdOutlineSettings,
   MdHelpCenter,
   MdLogout,MdOutlineSchool ,MdQuickreply,
@@ -22,6 +16,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { FaRegCalendarCheck,FaUserGraduate, } from "react-icons/fa";
 import { GrInProgress } from "react-icons/gr";
 import { SiAlchemy } from "react-icons/si";
+import { FcAbout } from "react-icons/fc";
 const menuItems = [
 
     {
@@ -77,10 +72,16 @@ const menuItems = [
           path: "/dashboard/settings",
           icon: <MdOutlineSettings />,
         },
+        
         {
           title: "Help",
           path: "/dashboard/help",
           icon: <MdHelpCenter />,
+        },
+        {
+          title: "About Us",
+          path: "./components/Ui/dashboard/sidebar/About_us",
+          icon: <FcAbout />,
         },
       ],
     },
