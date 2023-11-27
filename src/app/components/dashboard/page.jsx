@@ -4,9 +4,7 @@ import styles from "../Ui/dashboard/dashboard.module.css"; // Ensure you have a 
 import { useRouter } from "next/navigation";
 import CircularProgress from "@mui/material/CircularProgress";
 import Link from "next/link";
-import Image from 'next/image'; // Corrected import statement
-import * as Realm from 'realm-web';
-
+import Image from "next/image"; // Corrected import statement
 
 const Dashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -17,48 +15,43 @@ const Dashboard = () => {
   const handleAddCourse = () => {
     router.push("/components/addCourse"); // Replace with actual path
   };
-  const app = new Realm.App({ id: "alchemi-jpihv" });
+  let userId; // Declare userId outside the conditional block
 
+  if (typeof window !== 'undefined') {
+    userId = localStorage.getItem('userId'); // Assign value inside the block
+  }
   useEffect(() => {
     const fetchCourses = async () => {
       setIsLoading(true);
-      const user = app.currentUser;
-
-      if (!user) {
-        console.error('User not logged in');
-        setIsLoading(false);
-        // Redirect to login or handle unauthenticated user
-        return;
-      }
-
-      const token = user.accessToken; // Ensure this is the correct property for the token
 
       try {
         const response = await fetch("/api/getUserCourses", {
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${token}`,
-            // Add any other headers your API requires
+            "Content-Type": "text/plain",
+            // Include an Authorization header if you are using a token-based auth
+            // 'Authorization': `Bearer ${userToken}`,
           },
+          body: userId,
         });
-
-        if (!response.ok) {
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data);
+          console.log(course);
+        } else {
+          // If the response is not OK, handle the error
           throw new Error(`Error fetching courses: ${response.statusText}`);
         }
-
-        const data = await response.json();
-        setCourses(data);
       } catch (error) {
         console.error("Error fetching courses:", error);
-        // Optionally, handle error by updating state to show an error message
+        // Handle error here
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchCourses();
-  }, [app.currentUser]); // Depend on currentUser for re-fetching when it changes
-
- 
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -71,16 +64,20 @@ const Dashboard = () => {
           )}
           {courses?.map((course) => (
             <div key={course._id} className={styles.card}>
-              <Link href={{
-                pathname: '/components/courses',
-                query:{ id: course._id}
-              }}>
-                <img
-                  src={"course.imageUrl"}
+              <Link
+                href={{
+                  pathname: "/components/courses",
+                  query: { id: course._id },
+                }}
+              >
+                <Image
+                  src={`/images/${course.imageUrl}`}
+                  width={100} // Set the desired width
+                  height={100} // Set the desired height
                   alt={course.title}
                   className={styles.cardImage}
                 />
-                <h3 className={styles.cardTitle}>{course.Title}</h3>
+                <h3 className={styles.cardTitle}>{course.title}</h3>
               </Link>
             </div>
           ))}

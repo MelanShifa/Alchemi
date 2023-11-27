@@ -5,8 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import Sidebar from "../Ui/Courses/courses-sidebar/courses-sidebar";
 import style from "../Ui/dashboard/dashboard.module.css";
 import { useRouter } from "next/navigation";
-import * as Realm from 'realm-web';
-
+import * as Realm from "realm-web";
 
 const Chat = ({ searchParams }) => {
   // Assuming courseId is passed as a prop to identify the course
@@ -23,23 +22,30 @@ const Chat = ({ searchParams }) => {
     // Wait until the router is ready and then access the query parameters
     // Now we can safely destructure courseId
     async function fetchData() {
-      const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
-      const user = app.currentUser; // Ensure 'app' and 'currentUser' are properly defined and available
-      const token = user ? user._accessToken : null; // Use the correct token property
-    
       try {
+        let userId; // Declare userId outside the conditional block
+
+        if (typeof window !== "undefined") {
+          userId = localStorage.getItem("userId"); // Assign value inside the block
+        }
         const [userRes, courseRes] = await Promise.all([
           fetch("/api/getUser", {
+            method: "POST",
             headers: {
-              'Authorization': `Bearer ${token}`, // Add token to the getUser request
-              // Include other headers as needed
+              "Content-Type": "text/plain",
+              // Include an Authorization header if you are using a token-based auth
+              // 'Authorization': `Bearer ${userToken}`,
             },
+            body: userId,
           }),
-          fetch("/api/getUserCourses", { // Fetch all courses without passing courseId
+          fetch("/api/getUserCourses", {
+            method: "POST",
             headers: {
-              'Authorization': `Bearer ${token}`, // Add token to the getUserCourses request
-              // Include other headers as needed
+              "Content-Type": "text/plain",
+              // Include an Authorization header if you are using a token-based auth
+              // 'Authorization': `Bearer ${userToken}`,
             },
+            body: userId,
           }),
         ]);
 
@@ -58,7 +64,7 @@ const Chat = ({ searchParams }) => {
         // Initialize the chat with an introductory message
         const introMessage = {
           type: "bot",
-          text: `Hello, I am Alchemi, your AI tutor for ${course.Title}. How can I assist you today?`, // Ensure the property name matches your course data structure
+          text: `Hello, I am Alchemi, your AI tutor for ${course.title}. How can I assist you today?`, // Ensure the property name matches your course data structure
         };
         setMessages([introMessage]);
       } catch (error) {
@@ -93,16 +99,10 @@ const Chat = ({ searchParams }) => {
 
     setIsLoading(true);
     try {
-      const app = new Realm.App({ id: process.env.NEXT_PUBLIC_REALM_APP_ID });
-
-      const user = app.currentUser;
-      const token = user ? user._accessToken : null;
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
-
         },
         body: JSON.stringify({
           text: input,
@@ -112,7 +112,6 @@ const Chat = ({ searchParams }) => {
         }),
       });
 
-    
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -136,7 +135,7 @@ const Chat = ({ searchParams }) => {
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.title}>{course.Title} Ai tutor</div>
+        <div className={styles.title}>{course.title} Ai tutor</div>
         <div className={styles.menu}>
           <button className={styles.newChatButton} onClick={startNewChat}>
             + New Chat
